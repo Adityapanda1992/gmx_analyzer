@@ -1,0 +1,23 @@
+# Pixi environments
+.pixi/*
+!.pixi/config.toml
+
+# Analysis outputs
+temp/
+figures/
+
+# GROMACS backup files
+#*#
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+#auxilary files
+instruction.txt
+SESSION_SUMMARY.md
+md_0_1.gro
+md_0_1.tpr
+md_0_1.xtc
+index.ndx

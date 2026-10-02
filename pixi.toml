@@ -1,0 +1,22 @@
+[workspace]
+channels = ["conda-forge"]
+name = "MD_analysis"
+platforms = ["linux-64", "osx-64", "osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+analyze = { cmd = "python md_analysis.py", description = "Run full MD analysis pipeline (skip=5 default: RMSD, RMSF, Rg, SASA)" }
+quick-test = { cmd = "python md_analysis.py --skip 50", description = "Quick verification run with skip=50" }
+rmsd = { cmd = "python md_analysis.py --analyses rmsd", description = "Run RMSD analysis" }
+rmsf = { cmd = "python md_analysis.py --analyses rmsf", description = "Run RMSF analysis" }
+rg = { cmd = "python md_analysis.py --analyses rg", description = "Run Radius of Gyration (Rg) analysis" }
+sasa = { cmd = "python md_analysis.py --analyses sasa", description = "Run SASA analysis" }
+check-traj = { cmd = "gmx check -f md_0_1.xtc", description = "Check trajectory file integrity with GROMACS" }
+clean = { cmd = "python -c \"import shutil; shutil.rmtree('temp', ignore_errors=True); shutil.rmtree('figures', ignore_errors=True); print('Cleaned temp/ and figures/ directories')\"", description = "Clean generated output directories" }
+help = { cmd = "python md_analysis.py --help", description = "Show script help, arguments, and Pixi usage examples (e.g. pixi run analyze -- -p \"oxa-232\")" }
+
+[dependencies]
+python = ">=3.14.7,<3.15"
+numpy = ">=2.5.3,<3"
+matplotlib = ">=3.11.2,<4"
+gromacs = ">=2026.3,<2027"
