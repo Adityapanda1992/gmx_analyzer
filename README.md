@@ -1,56 +1,22 @@
-# Molecular Dynamics (MD) Trajectory Analysis with Pixi & GROMACS
+# GROMACS Molecular Dynamics (MD) Trajectory Analysis 
 
-This project provides a reproducible, Pixi-managed environment and automated workflow for GROMACS molecular dynamics (MD) trajectory analysis. It automates trajectory preprocessing (frame reduction, PBC removal, rotational/translational fitting) and computes key biophysical properties:
+This respiratory provides a  automated workflow for GROMACS molecular dynamics (MD) trajectory analysis. It automates trajectory preprocessing (frame reduction, PBC removal, rotational/translational fitting) and computes key biophysical properties:
 - **RMSD** (Root Mean Square Deviation)
 - **RMSF** (Root Mean Square Fluctuation)
 - **Rg** (Radius of Gyration)
 - **SASA** (Solvent Accessible Surface Area)
 
-It also generates publication-quality plots (`.png`) and summary statistics (mean and standard deviation).
-
----
-
-## 1. Project Structure
-
-```text
-MD_analysis/
-├── pixi.toml            # Pixi manifest (dependencies, platforms, tasks)
-├── pixi.lock            # Fully reproducible lockfile for multi-platform environments
-├── .gitignore           # Git ignore rules for Pixi envs, outputs, and GROMACS backups
-├── md_analysis.py       # Main Python MD analysis and plotting script
-├── index.ndx            # GROMACS index file containing atom groups
-├── md_0_1.tpr           # GROMACS run input / topology file
-├── md_0_1.xtc           # Input trajectory file
-├── md_0_1.gro           # Coordinate structure file
-├── figures/             # Generated publication figures (.png)
-│   ├── MyProtein_RMSD.png
-│   ├── MyProtein_RMSF.png
-│   ├── MyProtein_Rg.png
-│   └── MyProtein_SASA.png
-├── temp/                # Preprocessed trajectories and raw GROMACS XVG data
-│   ├── MyProtein_skipped.xtc
-│   ├── MyProtein_noPBC.xtc
-│   ├── MyProtein_fitted.xtc
-│   ├── MyProtein_rmsd.xvg
-│   ├── MyProtein_rmsf.xvg
-│   ├── MyProtein_rg.xvg
-│   └── MyProtein_sasa.xvg
-└── README.md            # Project documentation
-```
-
----
-
-## 2. Dependencies & Environment Management
+It also generates publication-quality plots (`.png`) .
+## 1. Dependencies & Environment Management
 
 All dependencies (including the GROMACS binary suite and Python scientific stack) are fully managed via [Pixi](https://pixi.sh/) using the `conda-forge` channel. No system-level installation of GROMACS or manual compilation is needed.
+### Dependencies
+- **GROMACS** (`>=2026.3,<2027`)
+- **Python** (`>=3.14.7,<3.15`)
+- **NumPy** (`>=2.5.3,<3`)
+- **Matplotlib** (`>=3.11.2,<4`)
 
-### Locked Dependencies
-- **GROMACS** (`>=2026.3,<2027`): Full command-line suite (`gmx`, `gmx check`, `gmx trjconv`, `gmx rms`, `gmx rmsf`, `gmx gyrate`, `gmx sasa`).
-- **Python** (`>=3.14.7,<3.15`): Execution runtime for the analysis and plotting wrapper.
-- **NumPy** (`>=2.5.3,<3`): Data extraction and statistical calculations (mean, standard deviation).
-- **Matplotlib** (`>=3.11.2,<4`): Plotting engine (automatically runs headless with `Agg` backend when `--show` is omitted).
-
-### Supported Platforms
+#### Supported Platforms
 - `linux-64`
 - `osx-64`
 - `osx-arm64` (Apple Silicon)
@@ -59,7 +25,7 @@ All dependencies (including the GROMACS binary suite and Python scientific stack
 
 ---
 
-## 3. Installation & Quick Start
+## 2. Installation & Quick Start
 
 ### Prerequisites
 Install [Pixi](https://pixi.sh/) on your system:
@@ -78,7 +44,7 @@ Pixi resolves the exact dependencies from `pixi.lock` and creates a self-contain
 
 ---
 
-## 4. Execution & Available Tasks
+## 3. Execution & Available Tasks
 
 Pixi tasks provide one-command shortcuts to run the entire pipeline or individual analyses:
 
@@ -131,20 +97,20 @@ exit
 
 ---
 
-## 5. Custom Command-Line Options
+## 4. Custom Command-Line Options
 
 You can pass custom arguments to predefined Pixi tasks using the standard `--` separator, or run `md_analysis.py` directly:
 
 ### Passing Arguments to Pixi Tasks (Recommended)
 ```bash
 # Set custom protein prefix on full analysis
-pixi run analyze -- -p "oxa-232"
+pixi run analyze -- -p "my_protein" #"my_protein" can be any name that you want to give for your system.
 
 # Adjust frame skipping (e.g. skip 10 frames) with custom prefix
-pixi run analyze -- --skip 10 -p "oxa-232"
+pixi run analyze -- --skip 10 -p "my_protein"
 
 # Run specific analysis with custom prefix
-pixi run rmsd -- -p "oxa-232"
+pixi run rmsd -- -p "my_protein"
 
 # Pass a custom index file
 pixi run quick-test -- -n index.ndx
@@ -175,7 +141,7 @@ pixi run python md_analysis.py --help
 
 ---
 
-## 6. Input Requirements
+## 5. Input Requirements
 
 The workflow expects standard GROMACS files in the working directory (or paths specified via CLI flags):
 1. **Trajectory file (`.xtc`)**: Coordinates over time (e.g., `md_0_1.xtc`).
@@ -188,7 +154,7 @@ The workflow expects standard GROMACS files in the working directory (or paths s
 
 ---
 
-## 7. Expected Outputs & Verification
+## 6. Expected Outputs & Verification
 
 Upon running `pixi run analyze`, the following outputs are generated:
 
@@ -209,7 +175,7 @@ Upon running `pixi run analyze`, the following outputs are generated:
 
 ---
 
-## 8. Limitations & Notes
+## 7. Limitations & Notes
 
 - **Platform Limitation**: Conda-forge does not distribute native Windows builds of GROMACS. Windows users must use Windows Subsystem for Linux (WSL / WSL2) to run this Pixi environment.
 - **Disk Space**: Trajectory preprocessing writes intermediate trajectories (`_skipped.xtc`, `_noPBC.xtc`, `_fitted.xtc`). Ensure sufficient disk space is available (approx. 1 GB for 2000 frames of a ~46k atom system). Use `pixi run clean` to remove them when finished.
